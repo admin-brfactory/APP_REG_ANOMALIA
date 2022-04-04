@@ -1,11 +1,93 @@
 <mvc:View controllerName="com.arcelor.ZGEEHS_REG_ANOM.controller.MainView" xmlns:html="http://www.w3.org/1999/xhtml"
-	xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
+	xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core"
+	xmlns:u="sap.ui.unified">
 	<App>
 		<pages>
 			<Page title="{i18n>title}" showHeader="false">
 				<content>
-					<DatePicker></DatePicker>
+					<f:SimpleForm id="SimpleFormChange354" editable="true" title="{i18n>titleFormPreencDados}" layout="ColumnLayout" labelSpanXL="12"
+						labelSpanL="12" labelSpanM="12" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0"
+						columnsXL="2" columnsL="2" columnsM="2" singleContainerFullSize="false">
+						<Label text="{i18n>lblEntradaRegistro}"/>
+						<Input value="{registrarAnomalia>/EntradaRegistroValue}" enabled="{registrarAnomalia>/EntradaRegistroEnabled}"/>
+						<Label text="{i18n>lblTituloAnomalia}"/>
+						<Input value="{registrarAnomalia>/TituloAnomaliaValue}"/>
+						<Label text="{i18n>lblDataOcorrencia}"/>
+						<DatePicker id="DataOcorrencia" dateValue="{registrarAnomalia>/DataOcorrenciaValue}" displayFormat="dd/MM/yyyy" placeholder="dd/MM/aaaa"/>
+						<Label text="{i18n>lblHoraOcorrencia}"/>
+						<TimePicker id="HoraOcorrencia" dateValue="{registrarAnomalia>/HoraOcorrenciaValue}" displayFormat="HH:mm"/>
+						<Label text="{i18n>lblLetraRegTrabalho}"/>
+						<Select items="{registrarAnomalia>/ListaLetraRegTrab}">
+							<core:Item key="{registrarAnomalia>ATWRT}" text="{registrarAnomalia>ATWTB}"/>
+						</Select>
+						<Label text="{i18n>lblOrigemAnomalia}"/>
+						<Select items="{registrarAnomalia>/ListaOrigemAnomalia}">
+							<core:Item key="{registrarAnomalia>ATZHL}" text="{registrarAnomalia>ATWTB}"/>
+						</Select>
+						<Label text="{i18n>lblUnidadeOrganizacional}"/>
+						<Input value="{= ${registrarAnomalia>/InfoUser/ORGSH} !== '' ? ${parts: [{path: 'registrarAnomalia>/InfoUser/ORGSH'}, {value: '-'}, {path: 'registrarAnomalia>/InfoUser/ORGTX'}]} : ${registrarAnomalia>/InfoUser/ORGTX}}" enabled="{registrarAnomalia>/UnidadeOrganizacionalEnabled}"/>
+						<Label text="{i18n>lblSiteRespRegistro}"/>
+						<Input value="{= ${registrarAnomalia>/InfoUser/BTRTL} !== '' ? ${parts: [{path: 'registrarAnomalia>/InfoUser/BTRTL'}, {value: '-'}, {path: 'registrarAnomalia>/InfoUser/BUTXT'}]} : ${registrarAnomalia>/InfoUser/BUTXT}}" enabled="{registrarAnomalia>/SiteRespRegEnabled}"/>
+						<Label text="{i18n>lblFornecedorRespReg}"/>
+						<Input value="{registrarAnomalia>/InfoUser/LIFNR_NAME}" enabled="{registrarAnomalia>/FornecedorRespRegEnabled}"/>
+						<Label text="{i18n>lblLocalInstalacao}"/> 
+						<Select items="{registrarAnomalia>/ListaLocaisInstalacao}" change="getDetalhamentoLocal">
+							<core:Item key="" text="{= ${registrarAnomalia>VALUE} !== '' ? ${parts: [{path: 'registrarAnomalia>TEXT'}, {value: '-'}, {path: 'registrarAnomalia>VALUE'}]} : ${registrarAnomalia>TEXT}}"/>
+						</Select>
+						<Label text="{i18n>lblDetalhamentoLocal}"/>
+						<Select enabled="{registrarAnomalia>/DetalhamentoLocalEnabled}">
+							<core:Item key="" text=""/>
+						</Select>
+						<Label text="{i18n>lblDescPreliminarAnom}"/>
+						<TextArea value="{registrarAnomalia>/DescPreliminarAnomVAlue}" height="5rem"/>
+						<Label text="{registrarAnomalia>/AcoesImedLabel}"/>
+						<TextArea value="{registrarAnomalia>/AcoesImediatasValue}" height="5rem"/>
+						<Label text="{registrarAnomalia>/ConsequenciaLabel}"/>
+						<TextArea value="{registrarAnomalia>/ConsequenciaValue}" height="5rem"/>
+						<Label text="{i18n>lblPossiveisCausas}"/>
+						<TextArea value="{registrarAnomalia>/PossiveisCausasValue}" height="5rem"/>
+						<Label text="{i18n>lblSugestoes}"/>
+						<TextArea value="{registrarAnomalia>/SugestoesValue}" height="5rem"/>
+						
+						<Label text="{i18n>lblAutoRelato}"/>
+						<Select selectedKey="N">
+							<core:Item key="S" text="{i18n>selectSim}"/>
+							<core:Item key="N" text="{i18n>selectNao}"/>
+						</Select>
+						<Label text="{i18n>lblComunicadoPor}"/>
+						<Input value="{registrarAnomalia>/InfoUser/PERNR}" showValueHelp="true"/>
+						<Text text="{registrarAnomalia>/InfoUser/ENAME}" class="TextStyleResp"/>
+					</f:SimpleForm>   
+				<f:SimpleForm id="SimpleFormAnexos" title="{i18n>TitleFormAnexos}" layout="ResponsiveGridLayout">
+					<u:FileUploader id="fileUploader" change="fileUploader" name="myFileUpload" uploadUrl="upload/"/>
+				</f:SimpleForm>
+					<Table id="anexosTable" inset="false" mode="Delete" delete="deletarAnexo" items="{registrarAnomalia>/AnexosLista}"
+							noDataText="{i18n>TitleTableAnexos}" growing="true" growingScrollToLoad="true" growingThreshold="40">
+							<columns>
+								<Column>
+									<Text text="Nome do Arquivo"/>
+								</Column>
+							</columns>
+							<items>
+								<ColumnListItem>
+									<cells>
+										<Link text="{registrarAnomalia>FileName}" press="linkAttach" />
+										<Text text="{registrarAnomalia>FileType}"/>
+										<Text text="{registrarAnomalia>FileSize}"/>
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>
 				</content>
+				<footer>
+					<OverflowToolbar>
+						<content>
+							<ToolbarSpacer/>
+							<Button text="{i18n>btnGravar}" type="Ghost"/>
+							<Button text="{i18n>btnLiberarAnom}" type="Ghost"/>
+						</content>
+					</OverflowToolbar>
+				</footer>				
 			</Page>
 		</pages>
 	</App>

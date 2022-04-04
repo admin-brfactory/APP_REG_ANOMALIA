@@ -1,0 +1,34 @@
+<edmx:Edmx
+    xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
+    xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+    xmlns:sap="http://www.sap.com/Protocols/SAPData" Version="1.0">
+    <edmx:DataServices m:DataServiceVersion="2.0">
+        <Schema
+            xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="ZSEHS_REGISTRO_ANOMALIA_SRV" xml:lang="pt" sap:schema-version="1">
+            <EntityType Name="GET_DADOS_INICIAIS" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="USUARIO"/>
+                    <PropertyRef Name="ENTRADA_REGISTRO"/>
+                </Key>
+                <Property Name="USUARIO" Type="Edm.String" Nullable="false" sap:unicode="false" sap:label="Usuário" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="ENTRADA_REGISTRO" Type="Edm.String" Nullable="false" sap:unicode="false" sap:label="Entrada de reigistro" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="ES_INFOS_USER" Type="Edm.String" sap:unicode="false" sap:label="Tabela de informações do usuário" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="ORIGEM_ANOMALIA" Type="Edm.String" sap:unicode="false" sap:label="Origem anomalia" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="DESCRICAO_PRELIMINAR" Type="Edm.String" sap:unicode="false" sap:label="Descrição preliminar" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="ACOES_IMEDIATAS" Type="Edm.String" sap:unicode="false" sap:label="Ações imediatas" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="CONSEQUECIA" Type="Edm.String" sap:unicode="false" sap:label="Consequência" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="POSSIVEIS_CAUSAS" Type="Edm.String" sap:unicode="false" sap:label="Possíveis causas" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="SUGESTOES" Type="Edm.String" sap:unicode="false" sap:label="Sugestões" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="AUTO_RELATO" Type="Edm.String" sap:unicode="false" sap:label="Auto Relato" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="COMUNICADO_POR" Type="Edm.String" sap:unicode="false" sap:label="Comunicado por - empregado que solicitou" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
+            <EntityContainer Name="ZSEHS_REGISTRO_ANOMALIA_SRV_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx">
+                <EntitySet Name="GET_DADOS_INICIAISSet" EntityType="ZSEHS_REGISTRO_ANOMALIA_SRV.GET_DADOS_INICIAIS" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:addressable="false" sap:content-version="1"/>
+            </EntityContainer>
+            <atom:link
+                xmlns:atom="http://www.w3.org/2005/Atom" rel="self" href="./sap/opu/odata/sap/ZSEHS_REGISTRO_ANOMALIA_SRV/$metadata"/>
+                <atom:link
+                    xmlns:atom="http://www.w3.org/2005/Atom" rel="latest-version" href="./sap/opu/odata/sap/ZSEHS_REGISTRO_ANOMALIA_SRV/$metadata"/>
+                </Schema>
+            </edmx:DataServices>
+        </edmx:Edmx>
