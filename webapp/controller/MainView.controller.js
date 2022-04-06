@@ -31,6 +31,7 @@ sap.ui.define([
 				SiteRespRegEnabled: false,
 				FornecedorRespRegEnabled: false,
 				DetalhamentoLocalEnabled: false,
+				ComunicadoPorEnabled: false,
 
 				ListaLetraRegTrab: [],
 				ListaOrigemAnomalia: [],
@@ -158,6 +159,19 @@ sap.ui.define([
 
 				}.bind(this)
 			});
+		},
+
+		onChangeAutoRealto: function(oEvent) {
+			var oViewModel = this.getView().getModel("registrarAnomalia");
+			var autoRelatoSelectedkey = oEvent.getSource().getSelectedKey();
+
+			if (autoRelatoSelectedkey === "S") {
+				oViewModel.setProperty("/ComunicadoPorEnabled", false);
+				oViewModel.setProperty("/InfoUser", []);
+				this.getView().byId("ComunicadoPor").fireChange();
+			} else {
+				oViewModel.setProperty("/ComunicadoPorEnabled", true);
+			}
 		},
 
 		onSearchComunicadoPorValueHelp: function() {
@@ -437,6 +451,51 @@ sap.ui.define([
 					"application/vnd.openxmlformats-officedocument.wordprocessingml"
 				);
 			}
+
+		},
+
+		validaCamposObrigatórios: function() {
+			var TituloAnomalia = this.getView().byId("TituloAnomalia").getValue();
+			var DataOcorrencia = this.getView().byId("DataOcorrencia").getDateValue();
+			var LetraRegTrabalho = this.getView().byId("LetraRegTrabalho").getSelectedKey();
+			var LocalInstalacao = this.getView().byId("LocalInstalacao").getSelectedKey();
+			var DescPrelimAnom = this.getView().byId("DescPrelimAnom").getValue();
+			var AcoesImediatas = this.getView().byId("AcoesImediatas").getValue();
+			var ComunicadoPor = this.getView().byId("ComunicadoPor").getValue();
+			
+			if(TituloAnomalia === ""){
+				MessageBox.error(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("msgTituloAnomaliaObrigatorio"));
+				return false;
+			} else if (DataOcorrencia === null) {
+				MessageBox.error(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("msgDataOcorrenciaObrigatorio"));
+				return false;
+			} else if (LetraRegTrabalho === "") {
+				MessageBox.error(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("msgLetraRegTrabalhoObrigatorio"));
+				return false;
+			} else if (LocalInstalacao === "") {
+				MessageBox.error(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("msgLocalInstalacaoObrigatorio"));
+				return false;
+			} else if (DescPrelimAnom === "") {
+				MessageBox.error(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("msgDescPremilimObrigatorio"));
+				return false;
+			} else if (AcoesImediatas === "") {
+				MessageBox.error(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("msgAcoesImediatasObrigatorio"));
+				return false;
+			} else if (ComunicadoPor === "") {
+				MessageBox.error(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("msgComunicadoPorObrigatorio"));
+				return false;
+			}
+		},
+
+		onGravar: function() {
+			var oModel = this.getOwnerComponent().getModel();
+			var oViewModel = this.getView().getModel("registrarAnomalia");
+			var validaCampos = this.validaCamposObrigatórios();
+			
+			if (validaCampos === false){
+				return;
+			}
+			
 
 		}
 
