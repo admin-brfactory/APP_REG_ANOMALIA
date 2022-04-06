@@ -17,7 +17,7 @@
 						<Label text="{i18n>lblHoraOcorrencia}"/>
 						<TimePicker id="HoraOcorrencia" dateValue="{registrarAnomalia>/HoraOcorrenciaValue}" displayFormat="HH:mm"/>
 						<Label text="{i18n>lblLetraRegTrabalho}"/>
-						<Select items="{registrarAnomalia>/ListaLetraRegTrab}">
+						<Select forceSelection="false" items="{registrarAnomalia>/ListaLetraRegTrab}">
 							<core:Item key="{registrarAnomalia>ATWRT}" text="{registrarAnomalia>ATWTB}"/>
 						</Select>
 						<Label text="{i18n>lblOrigemAnomalia}"/>
@@ -31,12 +31,12 @@
 						<Label text="{i18n>lblFornecedorRespReg}"/>
 						<Input value="{registrarAnomalia>/InfoUser/LIFNR_NAME}" enabled="{registrarAnomalia>/FornecedorRespRegEnabled}"/>
 						<Label text="{i18n>lblLocalInstalacao}"/> 
-						<Select items="{registrarAnomalia>/ListaLocaisInstalacao}" change="getDetalhamentoLocal">
-							<core:Item key="" text="{= ${registrarAnomalia>VALUE} !== '' ? ${parts: [{path: 'registrarAnomalia>TEXT'}, {value: '-'}, {path: 'registrarAnomalia>VALUE'}]} : ${registrarAnomalia>TEXT}}"/>
+						<Select forceSelection="false" items="{registrarAnomalia>/ListaLocaisInstalacao}" change="getDetalhamentoLocal">
+							<core:Item key="{registrarAnomalia>VALUE}" text="{= ${registrarAnomalia>VALUE} !== '' ? ${parts: [{path: 'registrarAnomalia>TEXT'}, {value: '-'}, {path: 'registrarAnomalia>VALUE'}]} : ${registrarAnomalia>TEXT}}"/>
 						</Select>
 						<Label text="{i18n>lblDetalhamentoLocal}"/>
-						<Select enabled="{registrarAnomalia>/DetalhamentoLocalEnabled}">
-							<core:Item key="" text=""/>
+						<Select forceSelection="false" items="{registrarAnomalia>/ListaDetalhamentoLocal}" enabled="{registrarAnomalia>/DetalhamentoLocalEnabled}">
+							<core:Item key="{registrarAnomalia>DETALHE}" text="{registrarAnomalia>DESCR}"/>
 						</Select>
 						<Label text="{i18n>lblDescPreliminarAnom}"/>
 						<TextArea value="{registrarAnomalia>/DescPreliminarAnomVAlue}" height="5rem"/>
@@ -55,7 +55,7 @@
 							<core:Item key="N" text="{i18n>selectNao}"/>
 						</Select>
 						<Label text="{i18n>lblComunicadoPor}"/>
-						<Input value="{registrarAnomalia>/InfoUser/PERNR}" showValueHelp="true"/>
+						<Input id="ComunicadoPor" value="{registrarAnomalia>/InfoUser/PERNR}" showValueHelp="true" valueHelpRequest="onValueHelpComunicadoPor" change="onChangeComunicadoPor"/>
 						<Text text="{registrarAnomalia>/InfoUser/ENAME}" class="TextStyleResp"/>
 					</f:SimpleForm>   
 				<f:SimpleForm id="SimpleFormAnexos" title="{i18n>TitleFormAnexos}" layout="ResponsiveGridLayout">

@@ -1,0 +1,33 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns:u="sap.ui.unified" xmlns:l="sap.ui.layout"
+	xmlns:f="sap.ui.layout.form">
+	<Dialog id="ComunicadoPorHelpFrag" title="{i18n>TitleDialogHelpComunicadoPor}" showHeader="true">
+		<Toolbar>
+			<Input id="SearchMatricula" placeholder="{i18n>SearchFieldMatricula}" liveChange="checaNumerico('SearchFieldMatricula', '8')"/>
+			<Input id="SearchNome" placeholder="{i18n>SearchFieldNome}"/>
+			<ToolbarSpacer/>
+			<Button icon="sap-icon://search" press="onSearchComunicadoPorValueHelp"/>
+		</Toolbar>
+		<Table id="HelpTableComunicadoPor" fixedLayout="false" items="{registrarAnomalia>/tabValueHelpComunicado}" growing="true" growingThreshold="50"
+			growingScrollToLoad="true">
+			<columns>
+				<Column hAlign="Center" demandPopin="true" minScreenWidth="Desktop">
+					<Text text="{i18n>columnMatricula}"/>
+				</Column>
+				<Column hAlign="Center" demandPopin="true" minScreenWidth="Desktop">
+					<Text text="{i18n>columnNome}"/>
+				</Column>
+			</columns>
+			<items>
+				<ColumnListItem type="Active" press="valueHelpSetResponsavel">
+					<cells>
+						<Text text="{path: 'registrarAnomalia>PERNR', formatter: '.formatter.formatMatricula'}"/>
+						<Text text="{registrarAnomalia>ENAME}"/>
+					</cells>
+				</ColumnListItem>
+			</items>
+		</Table>
+		<endButton>
+			<Button text="{i18n>btnFechar}" type="Ghost" press="onCloseDialog('ComunicadoPorHelpFrag')"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

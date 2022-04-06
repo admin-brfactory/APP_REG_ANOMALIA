@@ -2,35 +2,42 @@ sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/core/util/File",
-	"sap/m/MessageBox"
-], function(Controller, JSONModel, File, MessageBox) {
+	"sap/m/MessageBox",
+	"com/arcelor/ZGEEHS_REG_ANOM/model/formatter"
+], function(Controller, JSONModel, File, MessageBox, formatter) {
 	"use strict";
 
 	return Controller.extend("com.arcelor.ZGEEHS_REG_ANOM.controller.MainView", {
+
+		formatter: formatter,
+
 		onInit: function() {
 			var oViewModel = new JSONModel({
 				AcoesImedLabel: this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("lblAcoesImediatasSintomas"),
 				ConsequenciaLabel: this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("lblConsequenciaPerda"),
-				EntradaRegistroValue: "TESTE123",
-				TituloAnomaliaValue: "TITULO TESTE",
+				EntradaRegistroValue: "",
+				TituloAnomaliaValue: "",
 				DataOcorrenciaValue: new Date(),
 				HoraOcorrenciaValue: new Date(),
-				DescPreliminarAnomVAlue: "BBBBB",
-				AcoesImediatasValue: "123",
-				ConsequenciaValue: "456",
-				PossiveisCausasValue: "CCCCC",
-				SugestoesValue: "789",
-				ComunicadoPorValue: "70064338",
-				ComunicadoPorNome: "RONI FÁBREGAS",
+				DescPreliminarAnomVAlue: "",
+				AcoesImediatasValue: "",
+				ConsequenciaValue: "",
+				PossiveisCausasValue: "",
+				SugestoesValue: "",
+				ComunicadoPorValue: "",
+				ComunicadoPorNome: "",
 				EntradaRegistroEnabled: false,
 				UnidadeOrganizacionalEnabled: false,
 				SiteRespRegEnabled: false,
 				FornecedorRespRegEnabled: false,
 				DetalhamentoLocalEnabled: false,
-				
+
 				ListaLetraRegTrab: [],
 				ListaOrigemAnomalia: [],
 				ListaLocaisInstalacao: [],
+				ListaDetalhamentoLocal: [],
+
+				tabValueHelpComunicado: [],
 
 				InfoUser: {},
 				AnexosLista: []
@@ -56,22 +63,22 @@ sap.ui.define([
 						oViewModel.setProperty("/SiteRespRegValue", oInfoUser);
 						oViewModel.setProperty("/InfoUser", oInfoUser);
 					}
-					
-					if(oData.LIST_LETRA_REG_TRAB){
+
+					if (oData.LIST_LETRA_REG_TRAB) {
 						var oListRegTrab = JSON.parse(oData.LIST_LETRA_REG_TRAB);
-						
+
 						oViewModel.setProperty("/ListaLetraRegTrab", oListRegTrab);
 					}
-					
-					if(oData.LIST_ORIGEM_ANOMALIA){
+
+					if (oData.LIST_ORIGEM_ANOMALIA) {
 						var oListOrigemAnomalia = JSON.parse(oData.LIST_ORIGEM_ANOMALIA);
-						
+
 						oViewModel.setProperty("/ListaOrigemAnomalia", oListOrigemAnomalia);
 					}
-					
-					if(oData.LIST_LOCAIS_INSTALACAO){
+
+					if (oData.LIST_LOCAIS_INSTALACAO) {
 						var oListLocaisInst = JSON.parse(oData.LIST_LOCAIS_INSTALACAO);
-						
+
 						oViewModel.setProperty("/ListaLocaisInstalacao", oListLocaisInst);
 					}
 
@@ -82,12 +89,200 @@ sap.ui.define([
 				}.bind(this)
 			});
 		},
-		
+
 		getDetalhamentoLocal: function(oEvent) {
 			var oModel = this.getOwnerComponent().getModel();
 			var oViewModel = this.getView().getModel("registrarAnomalia");
+			var codLocal = oEvent.getSource().getSelectedKey();
 
-			var sURL = "/GET_DADOS_INICIAISSet(COD_LOCAL_INSTALACAO='" + usuario + "')";
+			var sURL = "/GET_DETALHAMENTO_LOCALSet(COD_LOCAL_INSTALACAO='" + codLocal + "')";
+
+			sap.ui.core.BusyIndicator.show();
+			oModel.read(sURL, {
+				success: function(oData) {
+					sap.ui.core.BusyIndicator.hide();
+
+					if (oData.LIST_DETALHAMENTO_LOCAL) {
+						var oListDetalheLocal = JSON.parse(oData.LIST_DETALHAMENTO_LOCAL);
+
+						if (oListDetalheLocal.length > 0)
+							oViewModel.setProperty("/ListaDetalhamentoLocal", oListDetalheLocal);
+						oViewModel.setProperty("/DetalhamentoLocalEnabled", true);
+					}
+
+				}.bind(this),
+				error: function(oError) {
+					sap.ui.core.BusyIndicator.hide();
+
+				}.bind(this)
+			});
+		},
+
+		onChangeComunicadoPor: function() {
+			var oModel = this.getOwnerComponent().getModel();
+			var oViewModel = this.getView().getModel("registrarAnomalia");
+			var matricula = oViewModel.getProperty("/InfoUser/PERNR");
+			var sURL = "/GET_PESQUISA_COMUNICADO_PORSet(PERNR='" + matricula + "')";
+
+			sap.ui.core.BusyIndicator.show();
+			oModel.read(sURL, {
+				success: function(oData) {
+					sap.ui.core.BusyIndicator.hide();
+
+					if (oData.ET_MENSAGEM) {
+						var oMensagem = JSON.parse(oData.ET_MENSAGEM);
+
+						if (oMensagem.length > 0) {
+							if (oMensagem[0].TYPE === "E") {
+								MessageBox.error(oMensagem[0].MESSAGE, {
+									onClose: function(oAction) {
+										oViewModel.setProperty("/InfoUser", "");
+										this.getView().byId("ComunicadoPor").fireChange();
+									}.bind(this)
+								});
+								return;
+							}
+						}
+					}
+
+					if (oData.ES_DADOS_USUARIO) {
+						var oDadosUsuarioPesquisado = JSON.parse(oData.ES_DADOS_USUARIO);
+
+						oViewModel.setProperty("/InfoUser", oDadosUsuarioPesquisado);
+						this.getLocaisInst();
+					}
+
+				}.bind(this),
+				error: function(oError) {
+					sap.ui.core.BusyIndicator.hide();
+
+				}.bind(this)
+			});
+		},
+
+		onSearchComunicadoPorValueHelp: function() {
+			var oModel = this.getOwnerComponent().getModel();
+			var oViewModel = this.getView().getModel("registrarAnomalia");
+			var matricula = "";
+			var nome = "";
+
+			if (this.getView().byId("SearchMatricula").getValue() !== "") {
+				matricula = this.getView().byId("SearchMatricula").getValue();
+			} else if (this.getView().byId("SearchNome").getValue() !== "") {
+				nome = this.getView().byId("SearchNome").getValue();
+				nome = nome.toUpperCase();
+				nome = encodeURIComponent(nome);
+			}
+
+			if (matricula === "" && nome === "") {
+				MessageBox.error(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("msgPreencherPeloMenosUm"));
+				return;
+			}
+
+			var sURL = "/GET_COMUNICADO_VALUE_HELPSet(PERNR='" + matricula + "',NOME='" + nome + "')";
+
+			sap.ui.core.BusyIndicator.show();
+			oModel.read(sURL, {
+				success: function(oData) {
+					sap.ui.core.BusyIndicator.hide();
+
+					if (oData.ET_MENSAGEM) {
+						var oMensagem = JSON.parse(oData.ET_MENSAGEM);
+
+						if (oMensagem.length > 0) {
+							if (oMensagem[0].TYPE === "E") {
+								MessageBox.error(oMensagem[0].MESSAGE);
+								return;
+							}
+						}
+					}
+
+					if (oData.ES_DADOS_USUARIO) {
+						var oDadosUsuarioPesquisado = JSON.parse(oData.ES_DADOS_USUARIO);
+
+						oViewModel.setProperty("/tabValueHelpComunicado", oDadosUsuarioPesquisado);
+					}
+
+				}.bind(this),
+				error: function(oError) {
+					sap.ui.core.BusyIndicator.hide();
+
+				}.bind(this)
+			});
+		},
+
+		valueHelpSetResponsavel: function(oEvent) {
+			var oViewModel = this.getView().getModel("registrarAnomalia");
+			var oInfoUser = oViewModel.getProperty("/tabValueHelpComunicado")[0];
+			oViewModel.setProperty("/InfoUser", oInfoUser);
+
+			this.onCloseDialog("ComunicadoPorHelpFrag");
+			this.getLocaisInst();
+		},
+
+		getLocaisInst: function() {
+			var oModel = this.getOwnerComponent().getModel();
+			var oViewModel = this.getView().getModel("registrarAnomalia");
+			var oInfoUser = oViewModel.getProperty("/InfoUser");
+			var btrtl = oInfoUser.BTRTL;
+
+			var sURL = "/GET_LOCAIS_INSTALACAOSet(BTRTL='" + btrtl + "')";
+
+			sap.ui.core.BusyIndicator.show();
+			oModel.read(sURL, {
+				success: function(oData) {
+					sap.ui.core.BusyIndicator.hide();
+
+					if (oData.LIST_LOCAIS_INSTALACAO) {
+						var oListaLocaisInstalacao = JSON.parse(oData.LIST_LOCAIS_INSTALACAO);
+
+						oViewModel.setProperty("/ListaLocaisInstalacao", oListaLocaisInstalacao);
+					}
+
+				}.bind(this),
+				error: function(oError) {
+					sap.ui.core.BusyIndicator.hide();
+
+				}.bind(this)
+			});
+		},
+
+		checaNumerico: function(sID, sLength) {
+			var regExp = /[a-zA-Z]/g;
+			var format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?°¨¨ºª₢£¢¬§`~´çÇ]+/;
+			var sValue = this.getView().byId(sID).getValue();
+
+			if (sLength) {
+				this.getView().byId(sID).setValue(sValue.substr(0, sLength));
+			}
+
+			if (regExp.test(sValue) || format.test(sValue)) {
+				this.getView().byId(sID).setValue(sValue.substring(0, sValue.length - 1));
+			}
+		},
+
+		onCloseDialog: function(sID) {
+			var oViewModel = this.getView().getModel("registrarAnomalia");
+			this.getView().byId(sID).close();
+
+			if (sID === "ComunicadoPorHelpFrag") {
+				this.getView().byId("SearchMatricula").setValue("");
+				this.getView().byId("SearchNome").setValue("");
+				oViewModel.setProperty("/tabValueHelpComunicado", []);
+			}
+		},
+
+		onValueHelpComunicadoPor: function() {
+			this._openValueHelpComunicadoPor().open();
+		},
+
+		_openValueHelpComunicadoPor: function() {
+			if (!this.openValueHelpComunicadoPor) {
+				this.openValueHelpComunicadoPor = sap.ui.xmlfragment(this.getView().getId(),
+					"com.arcelor.ZGEEHS_REG_ANOM.view.fragments.ComunicadoPorHelp", this);
+				this.getView().addDependent(this.openValueHelpComunicadoPor);
+			}
+			return this.openValueHelpComunicadoPor;
 		},
 
 		fileUploader: function(oEvent) {
