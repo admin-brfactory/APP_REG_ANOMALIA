@@ -19,13 +19,11 @@ sap.ui.define([
 				TituloAnomaliaValue: "",
 				DataOcorrenciaValue: new Date(),
 				HoraOcorrenciaValue: new Date(),
-				DescPreliminarAnomVAlue: "",
+				DescPreliminarAnomValue: "",
 				AcoesImediatasValue: "",
 				ConsequenciaValue: "",
 				PossiveisCausasValue: "",
 				SugestoesValue: "",
-				ComunicadoPorValue: "",
-				ComunicadoPorNome: "",
 				EntradaRegistroEnabled: false,
 				UnidadeOrganizacionalEnabled: false,
 				SiteRespRegEnabled: false,
@@ -184,7 +182,7 @@ sap.ui.define([
 				matricula = this.getView().byId("SearchMatricula").getValue();
 			} else if (this.getView().byId("SearchNome").getValue() !== "") {
 				nome = this.getView().byId("SearchNome").getValue();
-				nome = nome.toUpperCase();
+				nome = nome.toUpperCase().trim();
 				nome = encodeURIComponent(nome);
 			}
 
@@ -462,8 +460,8 @@ sap.ui.define([
 			var DescPrelimAnom = this.getView().byId("DescPrelimAnom").getValue();
 			var AcoesImediatas = this.getView().byId("AcoesImediatas").getValue();
 			var ComunicadoPor = this.getView().byId("ComunicadoPor").getValue();
-			
-			if(TituloAnomalia === ""){
+
+			if (TituloAnomalia === "") {
 				MessageBox.error(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("msgTituloAnomaliaObrigatorio"));
 				return false;
 			} else if (DataOcorrencia === null) {
@@ -487,15 +485,69 @@ sap.ui.define([
 			}
 		},
 
-		onGravar: function() {
+		montaEstruturaAnomalia: function(sAction) {
+			var Iatype = "9";
+			var Mwert5 = "1";
+			var oViewModel = this.getView().getModel("registrarAnomalia");
+			var EntradaRegistroValue = oViewModel.getProperty("/EntradaRegistroValue");
+			var TituloAnomaliaValue = oViewModel.getProperty("/TituloAnomaliaValue");
+			var DataOcorrenciaValue = formatter.converToABAPDate(oViewModel.getProperty("/DataOcorrenciaValue"));
+			var HoraOcorrenciaValue = formatter.convertToABAPTime(oViewModel.getProperty("/HoraOcorrenciaValue"));
+			var LetraRegTrabalho = this.getView().byId("LetraRegTrabalho").getSelectedKey();
+			var OrigemAnomalia = this.getView().byId("OrigemAnomalia").getSelectedKey();
+			var UnidadeOrganizacional =	oViewModel.getProperty("/InfoUser/ORGSH");
+			var SiteRespReg = oViewModel.getProperty("/InfoUser/BTRTL");
+			var FornecRespReg = oViewModel.getProperty("/InfoUser/LIFNR_NAME");
+			var LocalInstalacao = this.getView().byId("LocalInstalacao").getSelectedKey();
+			var DetalhamentoLocal = this.getView().byId("DetalhamentoLocal").getSelectedKey();
+			var DescPreliminarAnomValue = oViewModel.getProperty("/DescPreliminarAnomValue");
+			var AcoesImediatasValue = oViewModel.getProperty("/AcoesImediatasValue");
+			var ConsequenciaValue = oViewModel.getProperty("/ConsequenciaValue");
+			var PossiveisCausasValue = oViewModel.getProperty("/PossiveisCausasValue");
+			var SugestoesValue = oViewModel.getProperty("/SugestoesValue");
+			var AutoRelato = this.getView().byId("AutoRelato").getSelectedKey();
+			var ComunicadoPorValue = oViewModel.getProperty("/InfoUser/PERNR");
+			var ComunicadoPorNome = oViewModel.getProperty("/InfoUser/ENAME").trim();
+
+			var oAnomalia = {
+				IALID: EntradaRegistroValue,			//oViewModel.getProperty("/anomaliaId"),
+				IATYPE: Iatype, 						//"9",
+				EVDESC: TituloAnomaliaValue, 			//oViewModel.getProperty("/tituloAnomalia"),
+				EVDAT: DataOcorrenciaValue,				//this.convertToDate(oViewModel.getProperty("/dataOcorrencia")),
+				EVTIME: HoraOcorrenciaValue,			//this.convertToHour(oViewModel.getProperty("/horaOcorrencia")),
+				LETRA: LetraRegTrabalho,				//this.byId("fieldLetraReg").getSelectedKey(),
+				ORIGEM: OrigemAnomalia,					//this.byId("fieldOrigemAnomalia").getSelectedKey(),
+				WAID: UnidadeOrganizacional,			//oViewModel.getProperty("/unidadeOriganizacional"),
+				IAPLANT: SiteRespReg,					// oViewModel.getProperty("/siteRespRegistro"),
+				LIFNR_T: FornecRespReg,
+				ZZLOCAL: LocalInstalacao,				//this.byId("fieldLocalInstalacao").getSelectedKey(),
+				DETALHE: DetalhamentoLocal,
+			//	Aclocdesc:								//oViewModel.getProperty("/localAnomalia"),
+				MWERT3: DescPreliminarAnomValue,		//oViewModel.getProperty("/descricaoPreliminar"),
+				MWERT5: Mwert5,							//"1",
+				MWERT9:	sAction,						// _action,
+				MWERT6: AcoesImediatasValue,			//oViewModel.getProperty("/acaoImediata"),
+				MWERT10: ConsequenciaValue,				// oViewModel.getProperty("/consequencia"),
+				MWERT4:	PossiveisCausasValue,			//oViewModel.getProperty("/possivelCausa"),
+				MWERT7: SugestoesValue, 				//oViewModel.getProperty("/sugestao"),
+				MWERT2:	AutoRelato === "S" ? "X" : "",	//sRelato === "S" ? "X" : " ",
+				MWERT8: ComunicadoPorValue,				//oViewModel.getProperty("/comunicadoPor"),
+				COMUNIC_POR_T: ComunicadoPorNome		//sComunicado
+			};
+			
+			return JSON.stringify(oAnomalia);
+		},
+
+		onGravar: function(sAction) {
 			var oModel = this.getOwnerComponent().getModel();
 			var oViewModel = this.getView().getModel("registrarAnomalia");
 			var validaCampos = this.validaCamposObrigatórios();
-			
-			if (validaCampos === false){
+			var oDadosAnomalia;
+			if (validaCampos === false) {
 				return;
 			}
-			
+
+			oDadosAnomalia = this.montaEstruturaAnomalia(sAction);
 
 		}
 

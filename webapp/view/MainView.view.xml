@@ -21,36 +21,36 @@
 							<core:Item key="{registrarAnomalia>ATWRT}" text="{registrarAnomalia>ATWTB}"/>
 						</Select>
 						<Label text="{i18n>lblOrigemAnomalia}"/>
-						<Select items="{registrarAnomalia>/ListaOrigemAnomalia}">
+						<Select id="OrigemAnomalia" items="{registrarAnomalia>/ListaOrigemAnomalia}">
 							<core:Item key="{registrarAnomalia>ATZHL}" text="{registrarAnomalia>ATWTB}"/>
 						</Select>
 						<Label text="{i18n>lblUnidadeOrganizacional}"/>
-						<Input value="{= ${registrarAnomalia>/InfoUser/ORGSH} !== '' ? ${parts: [{path: 'registrarAnomalia>/InfoUser/ORGSH'}, {value: '-'}, {path: 'registrarAnomalia>/InfoUser/ORGTX'}]} : ${registrarAnomalia>/InfoUser/ORGTX}}" enabled="{registrarAnomalia>/UnidadeOrganizacionalEnabled}"/>
+						<Input id="UnidadeOrganizacional" value="{= ${registrarAnomalia>/InfoUser/ORGSH} !== '' ? ${parts: [{path: 'registrarAnomalia>/InfoUser/ORGSH'}, {value: '-'}, {path: 'registrarAnomalia>/InfoUser/ORGTX'}]} : ${registrarAnomalia>/InfoUser/ORGTX}}" enabled="{registrarAnomalia>/UnidadeOrganizacionalEnabled}"/>
 						<Label text="{i18n>lblSiteRespRegistro}"/>
-						<Input value="{= ${registrarAnomalia>/InfoUser/BTRTL} !== '' ? ${parts: [{path: 'registrarAnomalia>/InfoUser/BTRTL'}, {value: '-'}, {path: 'registrarAnomalia>/InfoUser/BUTXT'}]} : ${registrarAnomalia>/InfoUser/BUTXT}}" enabled="{registrarAnomalia>/SiteRespRegEnabled}"/>
+						<Input id="SiteRespReg" value="{= ${registrarAnomalia>/InfoUser/BTRTL} !== '' ? ${parts: [{path: 'registrarAnomalia>/InfoUser/BTRTL'}, {value: '-'}, {path: 'registrarAnomalia>/InfoUser/BUTXT'}]} : ${registrarAnomalia>/InfoUser/BUTXT}}" enabled="{registrarAnomalia>/SiteRespRegEnabled}"/>
 						<Label text="{i18n>lblFornecedorRespReg}"/>
-						<Input value="{registrarAnomalia>/InfoUser/LIFNR_NAME}" enabled="{registrarAnomalia>/FornecedorRespRegEnabled}"/>
+						<Input id="FornecRespReg" value="{registrarAnomalia>/InfoUser/LIFNR_NAME}" enabled="{registrarAnomalia>/FornecedorRespRegEnabled}"/>
 						<Label required="true" text="{i18n>lblLocalInstalacao}"/> 
 						<Select forceSelection="false" id="LocalInstalacao" items="{registrarAnomalia>/ListaLocaisInstalacao}" change="getDetalhamentoLocal">
 							<core:Item key="{registrarAnomalia>VALUE}" text="{= ${registrarAnomalia>VALUE} !== '' ? ${parts: [{path: 'registrarAnomalia>TEXT'}, {value: '-'}, {path: 'registrarAnomalia>VALUE'}]} : ${registrarAnomalia>TEXT}}"/>
 						</Select>
 						<Label text="{i18n>lblDetalhamentoLocal}"/>
-						<Select forceSelection="false" items="{registrarAnomalia>/ListaDetalhamentoLocal}" enabled="{registrarAnomalia>/DetalhamentoLocalEnabled}">
+						<Select id="DetalhamentoLocal" forceSelection="false" items="{registrarAnomalia>/ListaDetalhamentoLocal}" enabled="{registrarAnomalia>/DetalhamentoLocalEnabled}">
 							<core:Item key="{registrarAnomalia>DETALHE}" text="{registrarAnomalia>DESCR}"/>
 						</Select>
 						<Label required="true" text="{i18n>lblDescPreliminarAnom}"/>
-						<TextArea id="DescPrelimAnom" value="{registrarAnomalia>/DescPreliminarAnomVAlue}" height="5rem"/>
+						<TextArea maxLength="1000" id="DescPrelimAnom" value="{registrarAnomalia>/DescPreliminarAnomValue}" height="5rem"/>
 						<Label required="true" text="{registrarAnomalia>/AcoesImedLabel}"/>
-						<TextArea id="AcoesImediatas" value="{registrarAnomalia>/AcoesImediatasValue}" height="5rem"/>
+						<TextArea maxLength="1000" id="AcoesImediatas" value="{registrarAnomalia>/AcoesImediatasValue}" height="5rem"/>
 						<Label text="{registrarAnomalia>/ConsequenciaLabel}"/>
-						<TextArea value="{registrarAnomalia>/ConsequenciaValue}" height="5rem"/>
+						<TextArea maxLength="1000" value="{registrarAnomalia>/ConsequenciaValue}" height="5rem"/>
 						<Label text="{i18n>lblPossiveisCausas}"/>
-						<TextArea value="{registrarAnomalia>/PossiveisCausasValue}" height="5rem"/>
+						<TextArea maxLength="1000" value="{registrarAnomalia>/PossiveisCausasValue}" height="5rem"/>
 						<Label text="{i18n>lblSugestoes}"/>
-						<TextArea value="{registrarAnomalia>/SugestoesValue}" height="5rem"/>
+						<TextArea maxLength="1000" value="{registrarAnomalia>/SugestoesValue}" height="5rem"/>
 						
 						<Label text="{i18n>lblAutoRelato}"/>
-						<Select selectedKey="S" change="onChangeAutoRealto">
+						<Select id="AutoRelato" selectedKey="S" change="onChangeAutoRealto">
 							<core:Item key="S" text="{i18n>selectSim}"/>
 							<core:Item key="N" text="{i18n>selectNao}"/>
 						</Select>
@@ -83,8 +83,8 @@
 					<OverflowToolbar>
 						<content>
 							<ToolbarSpacer/>
-							<Button text="{i18n>btnGravar}" type="Ghost" press="onGravar"/>
-							<Button text="{i18n>btnLiberarAnom}" type="Ghost"/>
+							<Button text="{i18n>btnGravar}" type="Ghost" press="onGravar('2')"/>
+							<Button text="{i18n>btnLiberarAnom}" type="Ghost" press="onGravar('1')"/>
 						</content>
 					</OverflowToolbar>
 				</footer>				
