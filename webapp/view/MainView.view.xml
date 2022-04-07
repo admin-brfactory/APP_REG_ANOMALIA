@@ -17,11 +17,11 @@
 						<Label text="{i18n>lblHoraOcorrencia}"/>
 						<TimePicker id="HoraOcorrencia" dateValue="{registrarAnomalia>/HoraOcorrenciaValue}" displayFormat="HH:mm"/>
 						<Label required="true" text="{i18n>lblLetraRegTrabalho}"/>
-						<Select id="LetraRegTrabalho" forceSelection="false" items="{registrarAnomalia>/ListaLetraRegTrab}">
+						<Select id="LetraRegTrabalho" forceSelection="false" items="{registrarAnomalia>/ListaLetraRegTrab}" selectedKey="{registrarAnomalia>/tabAnomalia/LETRA}">
 							<core:Item key="{registrarAnomalia>ATWRT}" text="{registrarAnomalia>ATWTB}"/>
 						</Select>
 						<Label text="{i18n>lblOrigemAnomalia}"/>
-						<Select id="OrigemAnomalia" items="{registrarAnomalia>/ListaOrigemAnomalia}">
+						<Select id="OrigemAnomalia" items="{registrarAnomalia>/ListaOrigemAnomalia}" selectedKey="{registrarAnomalia>/tabAnomalia/ORIGEM}">
 							<core:Item key="{registrarAnomalia>ATZHL}" text="{registrarAnomalia>ATWTB}"/>
 						</Select>
 						<Label text="{i18n>lblUnidadeOrganizacional}"/>
@@ -50,7 +50,7 @@
 						<TextArea maxLength="1000" value="{registrarAnomalia>/SugestoesValue}" height="5rem"/>
 						
 						<Label text="{i18n>lblAutoRelato}"/>
-						<Select id="AutoRelato" selectedKey="S" change="onChangeAutoRealto">
+						<Select id="AutoRelato" selectedKey="{= ${registrarAnomalia>MWERT2} !== '' ? ${registrarAnomalia>MWERT2} : 'S'}" change="onChangeAutoRealto">
 							<core:Item key="S" text="{i18n>selectSim}"/>
 							<core:Item key="N" text="{i18n>selectNao}"/>
 						</Select>

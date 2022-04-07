@@ -15,7 +15,7 @@
 		},
 		"dataSources": {
 			"ZSEHS_REGISTRO_ANOMALIA_SRV": {
-				"uri": "/MB1/sap/opu/odata/sap/ZSEHS_REGISTRO_ANOMALIA_SRV/",
+				"uri": "/sap/opu/odata/sap/ZSEHS_REGISTRO_ANOMALIA_SRV/",
 				"type": "OData",
 				"settings": {
 					"odataVersion": "2.0",

@@ -37,6 +37,7 @@ sap.ui.define([
 				ListaDetalhamentoLocal: [],
 
 				tabValueHelpComunicado: [],
+				tabAnomalia: [],
 
 				InfoUser: {},
 				AnexosLista: []
@@ -56,11 +57,31 @@ sap.ui.define([
 			oModel.read(sURL, {
 				success: function(oData) {
 					sap.ui.core.BusyIndicator.hide();
+
 					if (oData.ES_INFOS_USER) {
 						var oInfoUser = JSON.parse(oData.ES_INFOS_USER);
 
 						oViewModel.setProperty("/SiteRespRegValue", oInfoUser);
 						oViewModel.setProperty("/InfoUser", oInfoUser);
+					}
+
+					if (oData.TAB_ANOMALIA) {
+						var oTabAnomalia = JSON.parse(oData.TAB_ANOMALIA);
+
+						//if (oTabAnomalia.length > 0) {
+						if (oTabAnomalia.IASTATUS === "I0439") {
+							oViewModel.setProperty("/tabAnomalia", oTabAnomalia);
+							oViewModel.setProperty("/TituloAnomaliaValue", oTabAnomalia.EVDESC);
+							oViewModel.setProperty("/EntradaRegistroValue", oTabAnomalia.IALID);
+							oViewModel.setProperty("/DescPreliminarAnomValue", oTabAnomalia.MWERT3);
+							oViewModel.setProperty("/AcoesImediatasValue", oTabAnomalia.MWERT6);
+							oViewModel.setProperty("/ConsequenciaValue", oTabAnomalia.MWERT10);
+							oViewModel.setProperty("/PossiveisCausasValue", oTabAnomalia.MWERT4);
+							oViewModel.setProperty("/SugestoesValue", oTabAnomalia.MWERT7);
+							oViewModel.setProperty("/InfoUser/PERNR", oTabAnomalia.MWERT8);
+							this.getView().byId("ComunicadoPor").fireChange();
+						}
+						//}
 					}
 
 					if (oData.LIST_LETRA_REG_TRAB) {
@@ -495,11 +516,12 @@ sap.ui.define([
 			var HoraOcorrenciaValue = formatter.convertToABAPTime(oViewModel.getProperty("/HoraOcorrenciaValue"));
 			var LetraRegTrabalho = this.getView().byId("LetraRegTrabalho").getSelectedKey();
 			var OrigemAnomalia = this.getView().byId("OrigemAnomalia").getSelectedKey();
-			var UnidadeOrganizacional =	oViewModel.getProperty("/InfoUser/ORGSH");
+			var UnidadeOrganizacional = oViewModel.getProperty("/InfoUser/ORGEH");
 			var SiteRespReg = oViewModel.getProperty("/InfoUser/BTRTL");
 			var FornecRespReg = oViewModel.getProperty("/InfoUser/LIFNR_NAME");
 			var LocalInstalacao = this.getView().byId("LocalInstalacao").getSelectedKey();
 			var DetalhamentoLocal = this.getView().byId("DetalhamentoLocal").getSelectedKey();
+			var LIFNR = oViewModel.getProperty("/InfoUser/LIFNR");
 			var DescPreliminarAnomValue = oViewModel.getProperty("/DescPreliminarAnomValue");
 			var AcoesImediatasValue = oViewModel.getProperty("/AcoesImediatasValue");
 			var ConsequenciaValue = oViewModel.getProperty("/ConsequenciaValue");
@@ -510,31 +532,33 @@ sap.ui.define([
 			var ComunicadoPorNome = oViewModel.getProperty("/InfoUser/ENAME").trim();
 
 			var oAnomalia = {
-				IALID: EntradaRegistroValue,			//oViewModel.getProperty("/anomaliaId"),
-				IATYPE: Iatype, 						//"9",
-				EVDESC: TituloAnomaliaValue, 			//oViewModel.getProperty("/tituloAnomalia"),
-				EVDAT: DataOcorrenciaValue,				//this.convertToDate(oViewModel.getProperty("/dataOcorrencia")),
-				EVTIME: HoraOcorrenciaValue,			//this.convertToHour(oViewModel.getProperty("/horaOcorrencia")),
-				LETRA: LetraRegTrabalho,				//this.byId("fieldLetraReg").getSelectedKey(),
-				ORIGEM: OrigemAnomalia,					//this.byId("fieldOrigemAnomalia").getSelectedKey(),
-				WAID: UnidadeOrganizacional,			//oViewModel.getProperty("/unidadeOriganizacional"),
-				IAPLANT: SiteRespReg,					// oViewModel.getProperty("/siteRespRegistro"),
+				IALID: EntradaRegistroValue, //oViewModel.getProperty("/anomaliaId"),
+				IATYPE: Iatype, //"9",
+				EVDESC: TituloAnomaliaValue, //oViewModel.getProperty("/tituloAnomalia"),
+				EVDAT: DataOcorrenciaValue, //this.convertToDate(oViewModel.getProperty("/dataOcorrencia")),
+				EVTIME: HoraOcorrenciaValue, //this.convertToHour(oViewModel.getProperty("/horaOcorrencia")),
+				LETRA: LetraRegTrabalho, //this.byId("fieldLetraReg").getSelectedKey(),
+				ORIGEM: OrigemAnomalia, //this.byId("fieldOrigemAnomalia").getSelectedKey(),
+				WAID: UnidadeOrganizacional, //oViewModel.getProperty("/unidadeOriganizacional"),
+				IAPLANT: SiteRespReg, // oViewModel.getProperty("/siteRespRegistro"),
 				LIFNR_T: FornecRespReg,
-				ZZLOCAL: LocalInstalacao,				//this.byId("fieldLocalInstalacao").getSelectedKey(),
+				LOC_INSTAL: LocalInstalacao,
+				//ZZLOCAL: ,							//this.byId("fieldLocalInstalacao").getSelectedKey(),
 				DETALHE: DetalhamentoLocal,
-			//	Aclocdesc:								//oViewModel.getProperty("/localAnomalia"),
-				MWERT3: DescPreliminarAnomValue,		//oViewModel.getProperty("/descricaoPreliminar"),
-				MWERT5: Mwert5,							//"1",
-				MWERT9:	sAction,						// _action,
-				MWERT6: AcoesImediatasValue,			//oViewModel.getProperty("/acaoImediata"),
-				MWERT10: ConsequenciaValue,				// oViewModel.getProperty("/consequencia"),
-				MWERT4:	PossiveisCausasValue,			//oViewModel.getProperty("/possivelCausa"),
-				MWERT7: SugestoesValue, 				//oViewModel.getProperty("/sugestao"),
-				MWERT2:	AutoRelato === "S" ? "X" : "",	//sRelato === "S" ? "X" : " ",
-				MWERT8: ComunicadoPorValue,				//oViewModel.getProperty("/comunicadoPor"),
-				COMUNIC_POR_T: ComunicadoPorNome		//sComunicado
+				LIFNR: LIFNR,
+				//	Aclocdesc:								//oViewModel.getProperty("/localAnomalia"),
+				MWERT3: DescPreliminarAnomValue, //oViewModel.getProperty("/descricaoPreliminar"),
+				MWERT5: Mwert5, //"1",
+				MWERT9: sAction, // _action,
+				MWERT6: AcoesImediatasValue, //oViewModel.getProperty("/acaoImediata"),
+				MWERT10: ConsequenciaValue, // oViewModel.getProperty("/consequencia"),
+				MWERT4: PossiveisCausasValue, //oViewModel.getProperty("/possivelCausa"),
+				MWERT7: SugestoesValue, //oViewModel.getProperty("/sugestao"),
+				MWERT2: AutoRelato === "S" ? "1" : "2", //sRelato === "S" ? "X" : " ",
+				MWERT8: ComunicadoPorValue, //oViewModel.getProperty("/comunicadoPor"),
+				COMUNIC_POR_T: ComunicadoPorNome //sComunicado
 			};
-			
+
 			return JSON.stringify(oAnomalia);
 		},
 
@@ -546,9 +570,33 @@ sap.ui.define([
 			if (validaCampos === false) {
 				return;
 			}
+			var oEntry = {
+				DADOS_ANOMALIA: this.montaEstruturaAnomalia(sAction)
+			};
 
-			oDadosAnomalia = this.montaEstruturaAnomalia(sAction);
+			sap.ui.core.BusyIndicator.show();
+			oModel.create("/SALVAR_ANOMALIASet", oEntry, {
 
+				success: function(oData) {
+					sap.ui.core.BusyIndicator.hide();
+					if (oData.ES_MENSAGEM) {
+						var oMensagem = JSON.parse(oData.ES_MENSAGEM);
+
+						if (oMensagem.length > 0) {
+							if (oMensagem[0].TYPE === "S") {
+								MessageBox.success(oMensagem[0].MESSAGE);
+							}
+						}
+					}
+
+				}.bind(this),
+
+				error: function(error) {
+					sap.ui.core.BusyIndicator.hide();
+					MessageBox.error(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("msgErroInesperado"));
+				}.bind(this)
+
+			});
 		}
 
 	});
