@@ -31,11 +31,11 @@
 						<Label text="{i18n>lblFornecedorRespReg}"/>
 						<Input id="FornecRespReg" value="{registrarAnomalia>/InfoUser/LIFNR_NAME}" enabled="{registrarAnomalia>/FornecedorRespRegEnabled}"/>
 						<Label required="true" text="{i18n>lblLocalInstalacao}"/> 
-						<Select forceSelection="false" id="LocalInstalacao" items="{registrarAnomalia>/ListaLocaisInstalacao}" change="getDetalhamentoLocal">
+						<Select forceSelection="false" id="LocalInstalacao" items="{registrarAnomalia>/ListaLocaisInstalacao}" selectedKey="{registrarAnomalia>/tabAnomalia/LOC_INSTAL}" change="getDetalhamentoLocal">
 							<core:Item key="{registrarAnomalia>VALUE}" text="{= ${registrarAnomalia>VALUE} !== '' ? ${parts: [{path: 'registrarAnomalia>TEXT'}, {value: '-'}, {path: 'registrarAnomalia>VALUE'}]} : ${registrarAnomalia>TEXT}}"/>
 						</Select>
 						<Label text="{i18n>lblDetalhamentoLocal}"/>
-						<Select id="DetalhamentoLocal" forceSelection="false" items="{registrarAnomalia>/ListaDetalhamentoLocal}" enabled="{registrarAnomalia>/DetalhamentoLocalEnabled}">
+						<Select id="DetalhamentoLocal" forceSelection="false" items="{registrarAnomalia>/ListaDetalhamentoLocal}" selectedKey="{registrarAnomalia>/tabAnomalia/DETALHE}" enabled="{registrarAnomalia>/DetalhamentoLocalEnabled}">
 							<core:Item key="{registrarAnomalia>DETALHE}" text="{registrarAnomalia>DESCR}"/>
 						</Select>
 						<Label required="true" text="{i18n>lblDescPreliminarAnom}"/>
@@ -71,9 +71,9 @@
 							<items>
 								<ColumnListItem>
 									<cells>
-										<Link text="{registrarAnomalia>FileName}" press="linkAttach" />
-										<Text text="{registrarAnomalia>FileType}"/>
-										<Text text="{registrarAnomalia>FileSize}"/>
+										<Link text="{registrarAnomalia>FNAME}" press="linkAttach" />
+										<Text text="{registrarAnomalia>FTYPE}"/>
+										<Text text="{registrarAnomalia>FSIZE}"/>
 									</cells>
 								</ColumnListItem>
 							</items>

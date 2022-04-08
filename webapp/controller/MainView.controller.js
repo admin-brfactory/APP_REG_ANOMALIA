@@ -65,25 +65,6 @@ sap.ui.define([
 						oViewModel.setProperty("/InfoUser", oInfoUser);
 					}
 
-					if (oData.TAB_ANOMALIA) {
-						var oTabAnomalia = JSON.parse(oData.TAB_ANOMALIA);
-
-						//if (oTabAnomalia.length > 0) {
-						if (oTabAnomalia.IASTATUS === "I0439") {
-							oViewModel.setProperty("/tabAnomalia", oTabAnomalia);
-							oViewModel.setProperty("/TituloAnomaliaValue", oTabAnomalia.EVDESC);
-							oViewModel.setProperty("/EntradaRegistroValue", oTabAnomalia.IALID);
-							oViewModel.setProperty("/DescPreliminarAnomValue", oTabAnomalia.MWERT3);
-							oViewModel.setProperty("/AcoesImediatasValue", oTabAnomalia.MWERT6);
-							oViewModel.setProperty("/ConsequenciaValue", oTabAnomalia.MWERT10);
-							oViewModel.setProperty("/PossiveisCausasValue", oTabAnomalia.MWERT4);
-							oViewModel.setProperty("/SugestoesValue", oTabAnomalia.MWERT7);
-							oViewModel.setProperty("/InfoUser/PERNR", oTabAnomalia.MWERT8);
-							this.getView().byId("ComunicadoPor").fireChange();
-						}
-						//}
-					}
-
 					if (oData.LIST_LETRA_REG_TRAB) {
 						var oListRegTrab = JSON.parse(oData.LIST_LETRA_REG_TRAB);
 
@@ -102,6 +83,34 @@ sap.ui.define([
 						oViewModel.setProperty("/ListaLocaisInstalacao", oListLocaisInst);
 					}
 
+					if (oData.TAB_ANOMALIA) {
+						var oTabAnomalia = JSON.parse(oData.TAB_ANOMALIA);
+
+						//if (oTabAnomalia.length > 0) {
+						if (oTabAnomalia.IASTATUS === "I0439") {
+							
+							if(oData.TAB_ANEXOS){
+							var	oTabAnexos = JSON.parse(oData.TAB_ANEXOS);
+								oViewModel.setProperty("/AnexosLista", oTabAnexos);
+							}
+							
+							oViewModel.setProperty("/tabAnomalia", oTabAnomalia);
+							oViewModel.setProperty("/DataOcorrenciaValue", formatter.formatDate(oTabAnomalia.EVDAT));
+							oViewModel.setProperty("/HoraOcorrenciaValue", formatter.formatTime(oTabAnomalia.EVTIME, oTabAnomalia.EVDAT));
+							oViewModel.setProperty("/TituloAnomaliaValue", oTabAnomalia.EVDESC);
+							oViewModel.setProperty("/EntradaRegistroValue", oTabAnomalia.IALID);
+							oViewModel.setProperty("/DescPreliminarAnomValue", oTabAnomalia.MWERT3);
+							oViewModel.setProperty("/AcoesImediatasValue", oTabAnomalia.MWERT6);
+							oViewModel.setProperty("/ConsequenciaValue", oTabAnomalia.MWERT10);
+							oViewModel.setProperty("/PossiveisCausasValue", oTabAnomalia.MWERT4);
+							oViewModel.setProperty("/SugestoesValue", oTabAnomalia.MWERT7);
+							oViewModel.setProperty("/InfoUser/PERNR", oTabAnomalia.MWERT8);
+							this.getDetalhamentoLocal();
+							this.getView().byId("ComunicadoPor").fireChange();
+						}
+						//}
+					}
+
 				}.bind(this),
 				error: function(oError) {
 					sap.ui.core.BusyIndicator.hide();
@@ -113,7 +122,7 @@ sap.ui.define([
 		getDetalhamentoLocal: function(oEvent) {
 			var oModel = this.getOwnerComponent().getModel();
 			var oViewModel = this.getView().getModel("registrarAnomalia");
-			var codLocal = oEvent.getSource().getSelectedKey();
+			var codLocal = this.getView().byId("LocalInstalacao").getSelectedKey();
 
 			var sURL = "/GET_DETALHAMENTO_LOCALSet(COD_LOCAL_INSTALACAO='" + codLocal + "')";
 
@@ -127,7 +136,7 @@ sap.ui.define([
 
 						if (oListDetalheLocal.length > 0)
 							oViewModel.setProperty("/ListaDetalhamentoLocal", oListDetalheLocal);
-						oViewModel.setProperty("/DetalhamentoLocalEnabled", true);
+							oViewModel.setProperty("/DetalhamentoLocalEnabled", true);
 					}
 
 				}.bind(this),
@@ -333,9 +342,10 @@ sap.ui.define([
 					var fileBase64 = btoa(binaryString);
 
 					var oFile = {
-						"FileName": sName,
-						"FileType": sType.toUpperCase(),
-						"FILE_DATA": fileBase64
+						"FNAME": sName,
+						"FTYPE": sType.toUpperCase(),
+						"FSIZE": file.size,
+						"FCONT": fileBase64
 					};
 
 					anexoLista.push(oFile);
@@ -375,16 +385,16 @@ sap.ui.define([
 			var oViewModel = this.getView().getModel("registrarAnomalia");
 			var tableData = oViewModel.getProperty(linkSelected);
 
-			if (tableData.FileType == "JPG" || tableData.FileType == "PNG" || tableData.FileType == "JPEG" || tableData.FileType == "SVG" ||
-				tableData.FileType == "BMP") {
+			if (tableData.FTYPE == "JPG" || tableData.FTYPE == "PNG" || tableData.FTYPE == "JPEG" || tableData.FTYPE == "SVG" ||
+				tableData.FTYPE == "BMP") {
 				var tab = window.open("about:blank", "_blank");
-				tableData.FILE_DATA = "data:image/jpeg;bmp;png;jpg;svg;base64," + tableData.FILE_DATA;
-				tab.document.write("<image src='" + tableData.FILE_DATA + "' width=" + 700 + " heigh=" + 700 + " ></image>");
+				tableData.FCONT = "data:image/jpeg;bmp;png;jpg;svg;base64," + tableData.FCONT;
+				tab.document.write("<image src='" + tableData.FCONT + "' width=" + 700 + " heigh=" + 700 + " ></image>");
 
-				tableData.FILE_DATA = tableData.FILE_DATA.replace("data:image/jpeg;bmp;png;jpg;svg;base64,", "");
-			} else if (tableData.FileType == "PDF") {
-				var fileBase64 = atob(tableData.FILE_DATA);
-				var attachNamePDF = tableData.FileName.replace(".pdf", "");
+				tableData.FCONT = tableData.FCONT.replace("data:image/jpeg;bmp;png;jpg;svg;base64,", "");
+			} else if (tableData.FTYPE == "PDF") {
+				var fileBase64 = atob(tableData.FCONT);
+				var attachNamePDF = tableData.FNAME.replace(".pdf", "");
 
 				var byteArray = new Uint8Array(fileBase64.length);
 				for (var i = 0; i < fileBase64.length; i++) {
@@ -399,9 +409,9 @@ sap.ui.define([
 
 				window.open(pdfURL, "_blank");
 
-			} else if (tableData.FileType == "XLSX") {
-				var fileBase64XLSX = atob(tableData.FILE_DATA);
-				var attachName = tableData.FileName.replace(".xlsx", "");
+			} else if (tableData.FTYPE == "XLSX") {
+				var fileBase64XLSX = atob(tableData.FCONT);
+				var attachName = tableData.FNAME.replace(".xlsx", "");
 
 				var byteArrayXLSX = new Uint8Array(fileBase64XLSX.length);
 				for (var k = 0; k < fileBase64XLSX.length; k++) {
@@ -418,9 +428,9 @@ sap.ui.define([
 				// var XLSXUrl = URL.createObjectURL(blobXLSX);
 
 				// window.open(XLSXUrl, "_blank");
-			} else if (tableData.FileType == "TXT") {
-				var fileBase64TXT = atob(tableData.FILE_DATA);
-				var attachNameTXT = tableData.FileName.replace(".txt", "");
+			} else if (tableData.FTYPE == "TXT") {
+				var fileBase64TXT = atob(tableData.FCONT);
+				var attachNameTXT = tableData.FNAME.replace(".txt", "");
 
 				var byteArrayTXT = new Uint8Array(fileBase64TXT.length);
 				for (var j = 0; j < fileBase64TXT.length; j++) {
@@ -433,9 +443,9 @@ sap.ui.define([
 					"txt",
 					"text/plain"
 				);
-			} else if (tableData.FileType == "PPTX") {
-				var fileBase64PPTX = atob(tableData.FILE_DATA);
-				var attachNamePPTX = tableData.FileName.replace(".pptx", "");
+			} else if (tableData.FTYPE == "PPTX") {
+				var fileBase64PPTX = atob(tableData.FCONT);
+				var attachNamePPTX = tableData.FNAME.replace(".pptx", "");
 
 				var byteArrayPPTX = new Uint8Array(fileBase64PPTX.length);
 				for (var h = 0; h < fileBase64PPTX.length; h++) {
@@ -448,14 +458,14 @@ sap.ui.define([
 					"pptx",
 					"application/vnd.ms-powerpoint"
 				);
-			} else if (tableData.FileType == "DOC" || tableData.FileType == "DOCX") {
-				var fileBase64DOC = atob(tableData.FILE_DATA);
+			} else if (tableData.FTYPE == "DOC" || tableData.FTYPE == "DOCX") {
+				var fileBase64DOC = atob(tableData.FCONT);
 				var attachNameDOC = "";
 
-				if (tableData.FileType == "DOC") {
-					attachNameDOC = tableData.FileName.replace(".doc", "");
-				} else if (tableData.FileType == "DOCX") {
-					attachNameDOC = tableData.FileName.replace(".docx", "");
+				if (tableData.FTYPE == "DOC") {
+					attachNameDOC = tableData.FNAME.replace(".doc", "");
+				} else if (tableData.FTYPE == "DOCX") {
+					attachNameDOC = tableData.FNAME.replace(".docx", "");
 				}
 
 				var byteArrayDOC = new Uint8Array(fileBase64DOC.length);
@@ -566,12 +576,14 @@ sap.ui.define([
 			var oModel = this.getOwnerComponent().getModel();
 			var oViewModel = this.getView().getModel("registrarAnomalia");
 			var validaCampos = this.validaCamposObrigatórios();
+			var anexos = this.getView().getModel("registrarAnomalia").getProperty("/AnexosLista");
 			var oDadosAnomalia;
 			if (validaCampos === false) {
 				return;
 			}
 			var oEntry = {
-				DADOS_ANOMALIA: this.montaEstruturaAnomalia(sAction)
+				DADOS_ANOMALIA: this.montaEstruturaAnomalia(sAction),
+				ANEXOS: JSON.stringify(anexos)
 			};
 
 			sap.ui.core.BusyIndicator.show();
