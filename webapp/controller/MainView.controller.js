@@ -88,12 +88,12 @@ sap.ui.define([
 
 						//if (oTabAnomalia.length > 0) {
 						if (oTabAnomalia.IASTATUS === "I0439") {
-							
-							if(oData.TAB_ANEXOS){
-							var	oTabAnexos = JSON.parse(oData.TAB_ANEXOS);
+
+							if (oData.TAB_ANEXOS) {
+								var oTabAnexos = JSON.parse(oData.TAB_ANEXOS);
 								oViewModel.setProperty("/AnexosLista", oTabAnexos);
 							}
-							
+
 							oViewModel.setProperty("/tabAnomalia", oTabAnomalia);
 							oViewModel.setProperty("/DataOcorrenciaValue", formatter.formatDate(oTabAnomalia.EVDAT));
 							oViewModel.setProperty("/HoraOcorrenciaValue", formatter.formatTime(oTabAnomalia.EVTIME, oTabAnomalia.EVDAT));
@@ -136,7 +136,7 @@ sap.ui.define([
 
 						if (oListDetalheLocal.length > 0)
 							oViewModel.setProperty("/ListaDetalhamentoLocal", oListDetalheLocal);
-							oViewModel.setProperty("/DetalhamentoLocalEnabled", true);
+						oViewModel.setProperty("/DetalhamentoLocalEnabled", true);
 					}
 
 				}.bind(this),
@@ -193,7 +193,7 @@ sap.ui.define([
 			var oViewModel = this.getView().getModel("registrarAnomalia");
 			var autoRelatoSelectedkey = oEvent.getSource().getSelectedKey();
 
-			if (autoRelatoSelectedkey === "S") {
+			if (autoRelatoSelectedkey === "1") {
 				oViewModel.setProperty("/ComunicadoPorEnabled", false);
 				oViewModel.setProperty("/InfoUser", []);
 				this.getView().byId("ComunicadoPor").fireChange();
@@ -564,7 +564,7 @@ sap.ui.define([
 				MWERT10: ConsequenciaValue, // oViewModel.getProperty("/consequencia"),
 				MWERT4: PossiveisCausasValue, //oViewModel.getProperty("/possivelCausa"),
 				MWERT7: SugestoesValue, //oViewModel.getProperty("/sugestao"),
-				MWERT2: AutoRelato === "S" ? "1" : "2", //sRelato === "S" ? "X" : " ",
+				MWERT2: AutoRelato, //=== "S" ? "1" : "2", //sRelato === "S" ? "X" : " ",
 				MWERT8: ComunicadoPorValue, //oViewModel.getProperty("/comunicadoPor"),
 				COMUNIC_POR_T: ComunicadoPorNome //sComunicado
 			};
@@ -572,12 +572,19 @@ sap.ui.define([
 			return JSON.stringify(oAnomalia);
 		},
 
+		LimparCampos: function() {
+
+		},
+
 		onGravar: function(sAction) {
 			var oModel = this.getOwnerComponent().getModel();
 			var oViewModel = this.getView().getModel("registrarAnomalia");
 			var validaCampos = this.validaCamposObrigatórios();
 			var anexos = this.getView().getModel("registrarAnomalia").getProperty("/AnexosLista");
-			var oDadosAnomalia;
+			var oDadosAnomalia; //
+			var sMessage = sAction === '1' ? this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("msgLiberarAnomalia") : this
+				.getOwnerComponent().getModel("i18n").getResourceBundle().getText("msgGravarAnomalia");
+
 			if (validaCampos === false) {
 				return;
 			}
@@ -586,28 +593,42 @@ sap.ui.define([
 				ANEXOS: JSON.stringify(anexos)
 			};
 
-			sap.ui.core.BusyIndicator.show();
-			oModel.create("/SALVAR_ANOMALIASet", oEntry, {
+			MessageBox.confirm(sMessage, {
+				onClose: function(sAction) {
+					if (sAction === "OK") {
+						sap.ui.core.BusyIndicator.show();
+						oModel.create("/SALVAR_ANOMALIASet", oEntry, {
+							success: function(oData) {
+								sap.ui.core.BusyIndicator.hide();
+								if (oData.ES_MENSAGEM) {
+									var oMensagem = JSON.parse(oData.ES_MENSAGEM);
 
-				success: function(oData) {
-					sap.ui.core.BusyIndicator.hide();
-					if (oData.ES_MENSAGEM) {
-						var oMensagem = JSON.parse(oData.ES_MENSAGEM);
+									if (oMensagem.length > 0) {
+										if (oMensagem[0].TYPE === "S") {
+											MessageBox.success(oMensagem[0].MESSAGE);
+											if (sAction === '2') {
+												this.getDadosIniciais();
+												oViewModel.refresh(true);
+											} else {
+												this.LimparCampos();
+												this.getDadosIniciais();
+												oViewModel.refresh(true);
+											}
+										}
+									}
+								}
 
-						if (oMensagem.length > 0) {
-							if (oMensagem[0].TYPE === "S") {
-								MessageBox.success(oMensagem[0].MESSAGE);
-							}
-						}
+							}.bind(this),
+
+							error: function(error) {
+								sap.ui.core.BusyIndicator.hide();
+								MessageBox.error(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("msgErroInesperado"));
+							}.bind(this)
+
+						});
+
 					}
-
-				}.bind(this),
-
-				error: function(error) {
-					sap.ui.core.BusyIndicator.hide();
-					MessageBox.error(this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("msgErroInesperado"));
 				}.bind(this)
-
 			});
 		}
 

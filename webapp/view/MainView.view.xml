@@ -50,9 +50,10 @@
 						<TextArea maxLength="1000" value="{registrarAnomalia>/SugestoesValue}" height="5rem"/>
 						
 						<Label text="{i18n>lblAutoRelato}"/>
-						<Select id="AutoRelato" selectedKey="{= ${registrarAnomalia>MWERT2} !== '' ? ${registrarAnomalia>MWERT2} : 'S'}" change="onChangeAutoRealto">
-							<core:Item key="S" text="{i18n>selectSim}"/>
-							<core:Item key="N" text="{i18n>selectNao}"/>
+						<Select id="AutoRelato" selectedKey="{= ${registrarAnomalia>/tabAnomalia/MWERT2} !== '' ? ${registrarAnomalia>/tabAnomalia/MWERT2} : '1'}" change="onChangeAutoRealto">
+							 <!--selectedKey="{= ${registrarAnomalia>MWERT2} !== '' ? ${registrarAnomalia>MWERT2} : 'S'}"-->
+							<core:Item key="1" text="{i18n>selectSim}"/>
+							<core:Item key="2" text="{i18n>selectNao}"/>
 						</Select>
 						<Label required="true" text="{i18n>lblComunicadoPor}"/>
 						<Input id="ComunicadoPor" value="{registrarAnomalia>/InfoUser/PERNR}" showValueHelp="true" valueHelpRequest="onValueHelpComunicadoPor" change="onChangeComunicadoPor" enabled="{registrarAnomalia>/ComunicadoPorEnabled}"/>
