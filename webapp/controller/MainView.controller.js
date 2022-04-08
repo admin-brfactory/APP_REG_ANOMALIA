@@ -573,23 +573,40 @@ sap.ui.define([
 		},
 
 		LimparCampos: function() {
-
+			var oViewModel = this.getView().getModel("registrarAnomalia");
+			oViewModel.setProperty("/EntradaRegistroValue", "");
+			oViewModel.setProperty("/TituloAnomaliaValue", "");
+			oViewModel.setProperty("/DataOcorrenciaValue", new Date());
+			oViewModel.setProperty("/HoraOcorrenciaValue", new Date());
+			this.getView().byId("LetraRegTrabalho").setSelectedKey("");
+			this.getView().byId("OrigemAnomalia").setSelectedKey("");
+			this.getView().byId("LocalInstalacao").setSelectedKey("");
+			this.getView().byId("DetalhamentoLocal").setSelectedKey("");
+			oViewModel.setProperty("/DescPreliminarAnomValue", "");
+			oViewModel.setProperty("/AcoesImediatasValue", "");
+			oViewModel.setProperty("/ConsequenciaValue", "");
+			oViewModel.setProperty("/PossiveisCausasValue", "");
+			oViewModel.setProperty("/SugestoesValue", "");
+			this.getView().byId("AutoRelato").setSelectedKey("");
+			oViewModel.setProperty("/InfoUser/PERNR");
+			oViewModel.setProperty("/InfoUser", {});
+			oViewModel.setProperty("/AnexosLista", []);
 		},
 
-		onGravar: function(sAction) {
+		onGravar: function(Action) {
 			var oModel = this.getOwnerComponent().getModel();
 			var oViewModel = this.getView().getModel("registrarAnomalia");
 			var validaCampos = this.validaCamposObrigatórios();
 			var anexos = this.getView().getModel("registrarAnomalia").getProperty("/AnexosLista");
 			var oDadosAnomalia; //
-			var sMessage = sAction === '1' ? this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("msgLiberarAnomalia") : this
+			var sMessage = Action === '1' ? this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("msgLiberarAnomalia") : this
 				.getOwnerComponent().getModel("i18n").getResourceBundle().getText("msgGravarAnomalia");
 
 			if (validaCampos === false) {
 				return;
 			}
 			var oEntry = {
-				DADOS_ANOMALIA: this.montaEstruturaAnomalia(sAction),
+				DADOS_ANOMALIA: this.montaEstruturaAnomalia(Action),
 				ANEXOS: JSON.stringify(anexos)
 			};
 
@@ -605,15 +622,20 @@ sap.ui.define([
 
 									if (oMensagem.length > 0) {
 										if (oMensagem[0].TYPE === "S") {
-											MessageBox.success(oMensagem[0].MESSAGE);
-											if (sAction === '2') {
-												this.getDadosIniciais();
-												oViewModel.refresh(true);
-											} else {
-												this.LimparCampos();
-												this.getDadosIniciais();
-												oViewModel.refresh(true);
-											}
+											MessageBox.success(oMensagem[0].MESSAGE, {
+												onClose: function(Confirm) {
+													if (Confirm === "OK") {
+														if (Action === '2') {
+															this.getDadosIniciais();
+															oViewModel.refresh(true);
+														} else {
+															this.LimparCampos();
+															this.getDadosIniciais();
+															oViewModel.refresh(true);
+														}
+													}
+												}.bind(this)
+											});
 										}
 									}
 								}
